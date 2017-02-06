@@ -1,4 +1,5 @@
 from .utils.exceptions import AuthenticationError
+from .utils.internal import parse_date
 
 import datetime
 import requests
@@ -53,40 +54,7 @@ class Portal:
 		dates = table.findAll(class_='result_increase')
 		for event in dates:
 			eventDate = event.text.strip('\n\t\r ')
-			#parse date
-			if 'to' in eventDate:
-				data = eventDate.split(' to ')
-				start = data[0]
-				end = data[1]
-				if ',' in end:
-					#start/end date
-					start = datetime.datetime(int(year),datetime.datetime.strptime(start.split(' ')[2],'%B').month,int(start.strip(string.ascii_letters+', ')),8,35)
-					end = datetime.datetime(int(year),datetime.datetime.strptime(end.split(' ')[2],'%B').month,int(end.strip(string.ascii_letters+', ')),15,15)
-				else:
-					#start/end time
-					date = start.split(' ')[1:-1]
-					start = start.split(' ')[-1]
-					start = datetime.datetime.strptime(('' if len(start)>6 else '0')+start.upper(),'%I:%M%p')
-					end = datetime.datetime.strptime(('' if len(end)>6 else '0')+end.upper(),'%I:%M%p')
-					start = datetime.datetime(int(year),datetime.datetime.strptime(date[1],'%B').month,int(date[0].strip(string.ascii_letters+', ')),start.hour,start.minute)
-					end=datetime.datetime(int(year),datetime.datetime.strptime(date[1],'%B').month,int(date[0].strip(string.ascii_letters+', ')),end.hour,end.minute)
-			elif 'am' in eventDate or 'pm' in eventDate:
-				#single day w/ time
-				eventDate=eventDate.split(', ')[1:]
-				eventDate=''.join(eventDate).split(' ')
-				time=datetime.datetime.strptime(('' if len(eventDate[2])>6 else '0')+eventDate[2].upper(),'%I:%M%p')
-				start=datetime.datetime(int(year),datetime.datetime.strptime(eventDate[1],'%B').month,int(eventDate[0].strip(string.ascii_letters+', ')),time.hour,time.minute)
-				endHour=time.hour+1
-				if endHour>24:
-					endHour=0
-				end=datetime.datetime(int(year),datetime.datetime.strptime(eventDate[1],'%B').month,int(eventDate[0].strip(string.ascii_letters+', ')),endHour,time.minute)
-			else:
-				#single day w/o time
-				eventDate=eventDate.split(', ')[1:]
-				eventDate=''.join(eventDate).split(' ')
-				start=datetime.datetime(int(year),datetime.datetime.strptime(eventDate[1],'%B').month,int(eventDate[0].strip(string.ascii_letters+', ')),8,35)
-				end=datetime.datetime(int(year),datetime.datetime.strptime(eventDate[1],'%B').month,int(eventDate[0].strip(string.ascii_letters+', ')),15,15)
-			#finish parsing date
+			eventDate = parse_date(eventDate, year)
 			eventTitle=event.parent.findNextSibling().text.strip('\n\t\r ')
 			temp.append(_calendaritem(eventTitle,start,end))
 		self.calendar=temp

@@ -32,7 +32,6 @@ class TestPortal (unittest.TestCase):
 			id = input('User ID: ')
 			pass_ = input('Password: ')
 			print('='*45)
-	input(id+':'+pass_)
 	def setUp(self):
 		self.portal = smcAPI.Portal()
 	def test_true_login(self):
