@@ -118,8 +118,8 @@ def parse_date(date_string, year, assume_school_time=False):
         else:
             start_temp = '00:00'
             end_temp = '23:59'
-        start_date = '{}/{}/{}/{}/{}'.format(*start_day, year, start_temp)
-        end_date = '{}/{}/{}/{}/{}'.format(*start_day, year, end_temp)
+        start_date = '{}/{}/{}/{}/{}'.format(start_day[0], start_day[1], start_day[2], year, start_temp)
+        end_date = '{}/{}/{}/{}/{}'.format(start_day[0], start_day[1], start_day[2], year, end_temp)
         start_payload = datetime.datetime.strptime(start_date, '%a/%d/%B/%Y/%H:%M')
         end_payload = datetime.datetime.strptime(end_date, '%a/%d/%B/%Y/%H:%M')
     elif type_ == 4:
@@ -138,16 +138,16 @@ def parse_date(date_string, year, assume_school_time=False):
         start_day[3][1] = start_day[3][1].strip('apm')
         if len(start_day[3][0]) == 1:
             start_day[3][0] = '0' + start_day[3][0]
-        start_date = '{}/{}/{}/{}/{}:{}:{}'.format(*start_day[:3], year, *start_day[3])
+        start_date = '{}/{}/{}/{}/{}:{}:{}'.format(start_day[0], start_day[1], start_day[2], year, start_day[3][0], start_day[3][1], start_day[3][2], start_day[3][1])
         start_payload = datetime.datetime.strptime(start_date, '%a/%d/%B/%Y/%I:%M:%p')
         if assume_school_time:
-            end_date = '{}/{}/{}/{}/3:15:PM'.format(*start_day[:3], year)
+            end_date = '{}/{}/{}/{}/3:15:PM'.format(start_day[0], start_day[1], start_day[2], year)
             end_payload = datetime.datetime.strptime(end_date, '%a/%d/%B/%Y/%I:%M:%p')
             if end_payload <= start_payload:
-                end_date = '{}/{}/{}/{}/11:59:PM'.format(*start_day[:3], year)
+                end_date = '{}/{}/{}/{}/11:59:PM'.format(start_day[0], start_day[1], start_day[2], year)
                 end_payload = datetime.datetime.strptime(end_date, '%a/%d/%B/%Y/%I:%M:%p')
         else:
-            end_date = '{}/{}/{}/{}/11:59:PM'.format(*start_day[:3], year)
+            end_date = '{}/{}/{}/{}/11:59:PM'.format(start_day[0], start_day[1], start_day[2], year)
             end_payload = datetime.datetime.strptime(end_date, '%a/%d/%B/%Y/%I:%M:%p')
     elif type_ == 5:
         #single day with time start/end
@@ -175,8 +175,8 @@ def parse_date(date_string, year, assume_school_time=False):
             end[0] = '0' + end[0]
         start[3][1] = start[3][1].strip('apm')
         end[1] = end[1].strip('apm')
-        start_date = '{}/{}/{}/{}/{}:{}:{}'.format(*start[:3], year, *start[-1])
-        end_date = '{}/{}/{}/{}/{}:{}:{}'.format(*start[:3], year, *end)
+        start_date = '{}/{}/{}/{}/{}:{}:{}'.format(start[0], start[1], start[2], year, *start[-1])
+        end_date = '{}/{}/{}/{}/{}:{}:{}'.format(start[0], start[1], start[2], year, *end)
         start_payload = datetime.datetime.strptime(start_date, '%a/%d/%B/%Y/%I:%M:%p')
         end_payload = datetime.datetime.strptime(end_date, '%a/%d/%B/%Y/%I:%M:%p')
     return start_payload, end_payload

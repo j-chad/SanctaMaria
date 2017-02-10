@@ -59,5 +59,34 @@ class TestUtils (unittest.TestCase):
                 start, end = utils.internal.parse_date(types[type_][0], 2015, False)
                 self.assertEqual(start, types[type_][1][0])
                 self.assertEqual(end, types[type_][1][1])
+    def test_parse_types_with_assumptions(self):
+        types = {
+            1: (
+                'Sun, 30th October to Thu, 3rd November',
+                (
+                    datetime.datetime(2015, 10, 30, 8, 35),
+                    datetime.datetime(2015, 11, 30, 15, 15)
+                )
+                ),
+            3: (
+                'Tue, 1st November',
+                (
+                    datetime.datetime(2015, 11, 1, 8, 35),
+                    datetime.datetime(2015, 11, 1, 15, 15)
+                )
+                ),
+            4: (
+                'Tue, 25th October 6:00pm',
+                (
+                    datetime.datetime(2015, 10, 25, 18, 0),
+                     datetime.datetime(2015, 10, 25, 23, 59)
+                )
+                )
+        }
+        for type_ in types:
+            with self.subTest(type_=type_):
+                start, end = utils.internal.parse_date(types[type_][0], 2015, True)
+                self.assertEqual(start, types[type_][1][0])
+                self.assertEqual(end, types[type_][1][1])
 
 unittest.main()
